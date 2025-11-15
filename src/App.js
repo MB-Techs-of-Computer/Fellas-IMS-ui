@@ -16,39 +16,42 @@ import PurchaseDetails from "./pages/PurchaseDetails";
 
 const App = () => {
   const [user, setUser] = useState("");
-  const [userRole, setUserRole] = useState("");
+  const [role, setRole] = useState("");
   const [loader, setLoader] = useState(true);
 
-  // Component mount olduğunda localStorage'dan oku
   useEffect(() => {
     const myLoginUser = localStorage.getItem("user");
-    const myUserRole = localStorage.getItem("userRole");
+    const myUserRole = localStorage.getItem("role");
 
     if (myLoginUser) {
       setUser(myLoginUser);
-      setUserRole(myUserRole || "employee");
+      setRole(myUserRole || "employee");
     }
-    setLoader(false); // Her durumda loader'ı kapat
-  }, []); // ← Boş array, sadece ilk render'da çalışır
+    setLoader(false);
+  }, []);
 
-  const signin = (newUser, callback) => {
-    setUser(newUser);
-    const role = localStorage.getItem("userRole") || "employee";
-    setUserRole(role);
-    callback();
-  };
+  const signin = (newUser, newRole, callback) => {
+  setUser(newUser);
+  setRole(newRole);
+
+  localStorage.setItem("user", newUser);
+  localStorage.setItem("role", newRole);
+
+  callback();
+};
+
 
   const signout = () => {
     setUser("");
-    setUserRole("");
+    setRole("");
     localStorage.removeItem("user");
-    localStorage.removeItem("userRole");
+    localStorage.removeItem("role");
     localStorage.removeItem("userName");
   };
 
-  const isAdmin = userRole === "admin";
+  const isAdmin = role === "admin";
 
-  let value = { user, signin, signout, userRole, isAdmin };
+  let value = { user, signin, signout, role, isAdmin };
 
   if (loader) {
     return (
@@ -72,7 +75,6 @@ const App = () => {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
 
-          {/* ADMIN ROUTES - Full Layout ile */}
           {isAdmin && (
             <Route
               path="/"
@@ -90,7 +92,6 @@ const App = () => {
             </Route>
           )}
 
-          {/* EMPLOYEE ROUTES - Sadece Inventory, Layout YOK */}
           {!isAdmin && (
             <Route
               path="/"

@@ -32,16 +32,10 @@ function Login() {
     setError("");
 
     try {
-      // api.js'deki login fonksiyonunu kullan
       const data = await login(form.email, form.password);
-
-      // Login başarılı - data içinde token ve user var
-      console.log("Login successful:", data);
-
-      // AuthContext'e giriş yap
-      authContext.signin(data.user.id, () => {
-        navigate("/");
-      });
+      authContext.signin(data.user.id, data.user.role, () => {
+  navigate("/");
+});
 
     } catch (err) {
       console.error("Login error:", err);

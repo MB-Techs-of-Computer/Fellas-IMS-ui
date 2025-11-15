@@ -218,7 +218,18 @@ export const isAuthenticated = () => {
 // Mevcut user bilgisini al
 export const getCurrentUser = () => {
   const userStr = localStorage.getItem("user");
-  return userStr ? JSON.parse(userStr) : null;
+
+  if (!userStr) {
+    return null;
+  }
+
+  try {
+    return JSON.parse(userStr);
+  } catch (e) {
+    console.error("Error parsing user data from Local Storage:", e);
+    localStorage.removeItem("user");
+    return null; 
+  }
 };
 
 // Admin mi kontrol et
