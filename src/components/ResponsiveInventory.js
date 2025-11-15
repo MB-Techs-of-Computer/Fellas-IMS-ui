@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import ProductCardMobile from "./ProductCardMobile";
 import ProductModal from "./ProductModal";
+import { getProducts, updateProduct, deleteProduct } from "../utils/api";
 
 const ResponsiveInventory = () => {
   const [products, setProducts] = useState([]);
@@ -27,13 +28,7 @@ const ResponsiveInventory = () => {
 
   const fetchProducts = async () => {
     try {
-      const userId = localStorage.getItem("user");
-      const response = await fetch("http://localhost:4000/api/product", {
-        headers: {
-          "x-user-id": userId,
-        },
-      });
-      const data = await response.json();
+      const data = await getProducts();
       setProducts(data);
     } catch (error) {
       console.error("Error fetching products:", error);
@@ -61,47 +56,18 @@ const ResponsiveInventory = () => {
   };
 
   const updateProductState = async (productId, updates) => {
-    const userId = localStorage.getItem("user");
-    
     try {
-      const response = await fetch(
-        `http://localhost:4000/api/product/${productId}`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-            "x-user-id": userId,
-          },
-          body: JSON.stringify({
-            ...updates,
-            userId: userId,
-          }),
-        }
-      );
-      if (response.ok) {
-        fetchProducts();
-      }
+      await updateProduct(productId, updates);
+      fetchProducts();
     } catch (error) {
       console.error("Error updating product:", error);
     }
   };
 
   const deleteItem = async (productId) => {
-    const userId = localStorage.getItem("user");
-    
     try {
-      const response = await fetch(
-        `http://localhost:4000/api/product/${productId}`,
-        {
-          method: "DELETE",
-          headers: {
-            "x-user-id": userId,
-          },
-        }
-      );
-      if (response.ok) {
-        fetchProducts(); // Listeyi yenile
-      }
+      await deleteProduct(productId);
+      fetchProducts(); // Listeyi yenile
     } catch (error) {
       console.error("Error deleting product:", error);
     }

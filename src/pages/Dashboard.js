@@ -3,8 +3,16 @@ import Chart from "react-apexcharts";
 import AuthContext from "../AuthContext";
 import { Doughnut } from "react-chartjs-2";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
+import { 
+  getTotalSaleAmount, 
+  getTotalPurchaseAmount, 
+  getStores, 
+  getProducts, 
+  getMonthlySales 
+} from "../utils/api";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
+
 export const data = {
   labels: ["Apple", "Knorr", "Shoop", "Green", "Purple", "Orange"],
   datasets: [
@@ -45,18 +53,8 @@ function Dashboard() {
       },
       xaxis: {
         categories: [
-          "Jan",
-          "Feb",
-          "Mar",
-          "Apr",
-          "May",
-          "Jun",
-          "Jul",
-          "Aug",
-          "Sep",
-          "Oct",
-          "Nov",
-          "Dec",
+          "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+          "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
         ],
       },
     },
@@ -68,7 +66,6 @@ function Dashboard() {
     ],
   });
 
-  // Update Chart Data
   const updateChartData = (salesData) => {
     setChart({
       ...chart,
@@ -91,45 +88,49 @@ function Dashboard() {
     fetchMonthlySalesData();
   }, []);
 
-  // Fetching total sales amount
-  const fetchTotalSaleAmount = () => {
-    fetch(
-      `http://localhost:4000/api/sales/get/${authContext.user}/totalsaleamount`
-    )
-      .then((response) => response.json())
-      .then((datas) => setSaleAmount(datas.totalSaleAmount));
+  const fetchTotalSaleAmount = async () => {
+    try {
+      const data = await getTotalSaleAmount();
+      setSaleAmount(data.totalSaleAmount);
+    } catch (err) {
+      console.log(err);
+    }
   };
 
-  // Fetching total purchase amount
-  const fetchTotalPurchaseAmount = () => {
-    fetch(
-      `http://localhost:4000/api/purchase/get/${authContext.user}/totalpurchaseamount`
-    )
-      .then((response) => response.json())
-      .then((datas) => setPurchaseAmount(datas.totalPurchaseAmount));
+  const fetchTotalPurchaseAmount = async () => {
+    try {
+      const data = await getTotalPurchaseAmount();
+      setPurchaseAmount(data.totalPurchaseAmount);
+    } catch (err) {
+      console.log(err);
+    }
   };
 
-  // Fetching all stores data
-  const fetchStoresData = () => {
-    fetch(`http://localhost:4000/api/store/get/${authContext.user}`)
-      .then((response) => response.json())
-      .then((datas) => setStores(datas));
+  const fetchStoresData = async () => {
+    try {
+      const data = await getStores();
+      setStores(data);
+    } catch (err) {
+      console.log(err);
+    }
   };
 
-  // Fetching Data of All Products
-  const fetchProductsData = () => {
-    fetch(`http://localhost:4000/api/product/get/${authContext.user}`)
-      .then((response) => response.json())
-      .then((datas) => setProducts(datas))
-      .catch((err) => console.log(err));
+  const fetchProductsData = async () => {
+    try {
+      const data = await getProducts();
+      setProducts(data);
+    } catch (err) {
+      console.log(err);
+    }
   };
 
-  // Fetching Monthly Sales
-  const fetchMonthlySalesData = () => {
-    fetch(`http://localhost:4000/api/sales/getmonthly`)
-      .then((response) => response.json())
-      .then((datas) => updateChartData(datas.salesAmount))
-      .catch((err) => console.log(err));
+  const fetchMonthlySalesData = async () => {
+    try {
+      const data = await getMonthlySales();
+      updateChartData(data.salesAmount);
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   return (
@@ -151,7 +152,6 @@ function Dashboard() {
                 d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"
               />
             </svg>
-
             <span className="text-xs font-medium"> 67.81% </span>
           </div>
 
@@ -159,12 +159,10 @@ function Dashboard() {
             <strong className="block text-sm font-medium text-gray-500">
               Sales
             </strong>
-
             <p>
               <span className="text-2xl font-medium text-gray-900">
                 ${saleAmount}
               </span>
-
               <span className="text-xs text-gray-500"> from $240.94 </span>
             </p>
           </div>
@@ -186,7 +184,6 @@ function Dashboard() {
                 d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6"
               />
             </svg>
-
             <span className="text-xs font-medium"> 67.81% </span>
           </div>
 
@@ -194,17 +191,15 @@ function Dashboard() {
             <strong className="block text-sm font-medium text-gray-500">
               Purchase
             </strong>
-
             <p>
               <span className="text-2xl font-medium text-gray-900">
-                {" "}
-                ${purchaseAmount}{" "}
+                ${purchaseAmount}
               </span>
-
               <span className="text-xs text-gray-500"> from $404.32 </span>
             </p>
           </div>
         </article>
+
         <article className="flex flex-col   gap-4 rounded-lg border border-gray-100 bg-white p-6 ">
           <div className="inline-flex gap-2 self-end rounded bg-red-100 p-1 text-red-600">
             <svg
@@ -221,7 +216,6 @@ function Dashboard() {
                 d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6"
               />
             </svg>
-
             <span className="text-xs font-medium"> 67.81% </span>
           </div>
 
@@ -229,17 +223,14 @@ function Dashboard() {
             <strong className="block text-sm font-medium text-gray-500">
               Total Products
             </strong>
-
             <p>
               <span className="text-2xl font-medium text-gray-900">
-                {" "}
-                {products.length}{" "}
+                {products.length}
               </span>
-
-              {/* <span className="text-xs text-gray-500"> from $404.32 </span> */}
             </p>
           </div>
         </article>
+
         <article className="flex flex-col   gap-4 rounded-lg border border-gray-100 bg-white p-6 ">
           <div className="inline-flex gap-2 self-end rounded bg-red-100 p-1 text-red-600">
             <svg
@@ -256,7 +247,6 @@ function Dashboard() {
                 d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6"
               />
             </svg>
-
             <span className="text-xs font-medium"> 67.81% </span>
           </div>
 
@@ -264,17 +254,14 @@ function Dashboard() {
             <strong className="block text-sm font-medium text-gray-500">
               Total Stores
             </strong>
-
             <p>
               <span className="text-2xl font-medium text-gray-900">
-                {" "}
-                {stores.length}{" "}
+                {stores.length}
               </span>
-
-              {/* <span className="text-xs text-gray-500"> from 0 </span> */}
             </p>
           </div>
         </article>
+
         <div className="flex justify-around bg-white rounded-lg py-8 col-span-full justify-center">
           <div>
             <Chart

@@ -3,6 +3,7 @@ import { Disclosure, Menu, Transition } from "@headlessui/react";
 import { Bars3Icon, BellIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import AuthContext from "../AuthContext";
 import { Link } from "react-router-dom";
+import { logout, getCurrentUser } from "../utils/api";
 
 const navigation = [
   { name: "Dashboard", href: "/", current: true },
@@ -20,9 +21,17 @@ function classNames(...classes) {
 
 export default function Header() {
   const authContext = useContext(AuthContext);
-  const userName = localStorage.getItem("userName") || "User";
-  const userEmail = localStorage.getItem("userEmail") || "";
-  const userImage = localStorage.getItem("userImage") || "https://via.placeholder.com/150";
+  
+  // getCurrentUser helper'ını kullan
+  const user = getCurrentUser();
+  const userName = user ? `${user.firstName} ${user.lastName}` : "User";
+  const userEmail = user?.email || "";
+  const userImage = user?.imageUrl || "https://via.placeholder.com/150";
+
+  const handleLogout = () => {
+    logout();
+    authContext.signout();
+  };
 
   return (
     <>
@@ -81,17 +90,15 @@ export default function Header() {
                             {userNavigation.map((item) => (
                               <Menu.Item key={item.name}>
                                 {({ active }) => (
-                                  <Link
-                                    to={item.href}
+                                  <button
+                                    onClick={handleLogout}
                                     className={classNames(
                                       active ? "bg-gray-100" : "",
-                                      "block px-4 py-2 text-sm text-gray-700"
+                                      "block w-full text-left px-4 py-2 text-sm text-gray-700"
                                     )}
                                   >
-                                    <span onClick={() => authContext.signout()}>
-                                      {item.name}{" "}
-                                    </span>
-                                  </Link>
+                                    {item.name}
+                                  </button>
                                 )}
                               </Menu.Item>
                             ))}
@@ -169,13 +176,11 @@ export default function Header() {
                     {userNavigation.map((item) => (
                       <Disclosure.Button
                         key={item.name}
-                        as="a"
-                        href={item.href}
-                        className="block rounded-md px-3 py-2 text-base font-medium text-gray-400 hover:bg-gray-700 hover:text-white"
+                        as="button"
+                        onClick={handleLogout}
+                        className="block w-full text-left rounded-md px-3 py-2 text-base font-medium text-gray-400 hover:bg-gray-700 hover:text-white"
                       >
-                        <span onClick={() => authContext.signout()}>
-                          {item.name}{" "}
-                        </span>
+                        {item.name}
                       </Disclosure.Button>
                     ))}
                   </div>

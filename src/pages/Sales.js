@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useContext } from "react";
 import AddSale from "../components/AddSale";
 import AuthContext from "../AuthContext";
+import { getSales, getProducts, getStores } from "../utils/api";
 
 function Sales() {
   const [showSaleModal, setShowSaleModal] = useState(false);
@@ -17,41 +18,37 @@ function Sales() {
     fetchStoresData();
   }, [updatePage]);
 
-  // Fetching Data of All Sales
-  const fetchSalesData = () => {
-    fetch(`http://localhost:4000/api/sales/get/${authContext.user}`)
-      .then((response) => response.json())
-      .then((data) => {
-        setAllSalesData(data);
-      })
-      .catch((err) => console.log(err));
+  const fetchSalesData = async () => {
+    try {
+      const data = await getSales();
+      setAllSalesData(data);
+    } catch (err) {
+      console.log(err);
+    }
   };
 
-  // Fetching Data of All Products
-  const fetchProductsData = () => {
-    fetch(`http://localhost:4000/api/product/get/${authContext.user}`)
-      .then((response) => response.json())
-      .then((data) => {
-        setAllProducts(data);
-      })
-      .catch((err) => console.log(err));
+  const fetchProductsData = async () => {
+    try {
+      const data = await getProducts();
+      setAllProducts(data);
+    } catch (err) {
+      console.log(err);
+    }
   };
 
-  // Fetching Data of All Stores
-  const fetchStoresData = () => {
-    fetch(`http://localhost:4000/api/store/get/${authContext.user}`)
-      .then((response) => response.json())
-      .then((data) => {
-        setAllStores(data);
-      });
+  const fetchStoresData = async () => {
+    try {
+      const data = await getStores();
+      setAllStores(data);
+    } catch (err) {
+      console.log(err);
+    }
   };
 
-  // Modal for Sale Add
   const addSaleModalSetting = () => {
     setShowSaleModal(!showSaleModal);
   };
 
-  // Handle Page Update
   const handlePageUpdate = () => {
     setUpdatePage(!updatePage);
   };
@@ -68,7 +65,6 @@ function Sales() {
             authContext={authContext}
           />
         )}
-        {/* Table  */}
         <div className="overflow-x-auto rounded-lg border bg-white border-gray-200 ">
           <div className="flex justify-between pt-5 pb-3 px-3">
             <div className="flex gap-4 justify-center items-center ">
@@ -79,7 +75,6 @@ function Sales() {
                 className="bg-blue-500 hover:bg-blue-700 text-white font-bold p-2 text-xs  rounded"
                 onClick={addSaleModalSetting}
               >
-                {/* <Link to="/inventory/add-product">Add Product</Link> */}
                 Add Sales
               </button>
             </div>

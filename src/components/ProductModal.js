@@ -1,7 +1,7 @@
 import { Fragment, useContext, useRef, useState, useEffect } from "react";
 import { Dialog, Transition } from "@headlessui/react";
-import { PlusIcon, PencilIcon } from "@heroicons/react/24/outline";
 import AuthContext from "../AuthContext";
+import { addProduct, updateProduct } from "../utils/api";
 
 export default function ProductModal({
   isOpen,
@@ -51,30 +51,24 @@ export default function ProductModal({
     setProduct({ ...product, [key]: value });
   };
 
-  const handleSubmit = () => {
-    const url = isEditMode
-      ? `http://localhost:4000/api/product/update`
-      : "http://localhost:4000/api/product/add";
-
-    const payload = isEditMode
-      ? { ...product, productID: productData._id }
-      : product;
-
-    fetch(url, {
-      method: "POST",
-      headers: {
-        "Content-type": "application/json",
-      },
-      body: JSON.stringify(payload),
-    })
-      .then((response) => {
-        if (response.ok) {
-          alert(isEditMode ? "Ürün güncellendi!" : "Ürün eklendi!");
-          onSuccess(); // Listeyi yenile
-          onClose(); // Modal'ı kapat
-        }
-      })
-      .catch((err) => console.log(err));
+  const handleSubmit = async () => {
+    try {
+      if (isEditMode) {
+        // Update existing product
+        await updateProduct(productData._id, product);
+        alert("Ürün güncellendi!");
+      } else {
+        // Add new product
+        await addProduct(product);
+        alert("Ürün eklendi!");
+      }
+      
+      onSuccess(); // Listeyi yenile
+      onClose(); // Modal'ı kapat
+    } catch (err) {
+      console.log(err);
+      alert("Hata oluştu");
+    }
   };
 
   return (

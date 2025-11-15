@@ -1,69 +1,54 @@
-// import { LockClosedIcon } from "@heroicons/react/20/solid";
 import { useContext, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import AuthContext from "../AuthContext";
+import { login } from "../utils/api";
 
 function Login() {
   const [form, setForm] = useState({
     email: "",
     password: "",
   });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   const authContext = useContext(AuthContext);
   const navigate = useNavigate();
 
   const handleInputChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
+    setError(""); // Error mesajını temizle
   };
 
-  const authCheck = () => {
-  setTimeout(() => {
-    fetch("http://localhost:4000/api/login")
-      .then((response) => response.json())
-      .then((data) => {
-        alert("Successfully Login");
-        // Tüm gerekli bilgileri ayrı ayrı kaydet
-        localStorage.setItem("user", data._id);
-        localStorage.setItem("userRole", data.role || "employee");
-        localStorage.setItem("userName", `${data.firstName} ${data.lastName}`);
-        localStorage.setItem("userEmail", data.email);
-        localStorage.setItem("userImage", data.imageUrl || "https://via.placeholder.com/150");
-        
-        authContext.signin(data._id, () => {
-          navigate("/");
-        });
-      })
-      .catch((err) => {
-        alert("Wrong credentials, Try again");
-        console.log(err);
-      });
-  }, 3000);
-};
-
-  const loginUser = (e) => {
-    // Cannot send empty data
-    if (form.email === "" || form.password === "") {
-      alert("To login user, enter details to proceed...");
-    } else {
-      fetch("http://localhost:4000/api/login", {
-        method: "POST",
-        headers: {
-          "Content-type": "application/json",
-        },
-        body: JSON.stringify(form),
-      })
-        .then((result) => {
-          console.log("User login", result);
-        })
-        .catch((error) => {
-          console.log("Something went wrong ", error);
-        });
-    }
-    authCheck();
-  };
-
-  const handleSubmit = (e) => {
+  const loginUser = async (e) => {
     e.preventDefault();
+
+    // Validation
+    if (form.email === "" || form.password === "") {
+      setError("Lütfen email ve şifrenizi girin");
+      return;
+    }
+
+    setLoading(true);
+    setError("");
+
+    try {
+      // api.js'deki login fonksiyonunu kullan
+      const data = await login(form.email, form.password);
+
+      // Login başarılı - data içinde token ve user var
+      console.log("Login successful:", data);
+
+      // AuthContext'e giriş yap
+      authContext.signin(data.user.id, () => {
+        navigate("/");
+      });
+
+    } catch (err) {
+      console.error("Login error:", err);
+      setError(err.message || "Giriş başarısız. Lütfen bilgilerinizi kontrol edin.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -83,8 +68,21 @@ function Login() {
               Hesabına giriş yap
             </h2>
           </div>
-          <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-            {/* <input type="hidden" name="remember" defaultValue="true" /> */}
+          
+          <form className="mt-8 space-y-6" onSubmit={loginUser}>
+            {/* Error mesajı */}
+            {error && (
+              <div className="rounded-md bg-red-50 p-4">
+                <div className="flex">
+                  <div className="ml-3">
+                    <h3 className="text-sm font-medium text-red-800">
+                      {error}
+                    </h3>
+                  </div>
+                </div>
+              </div>
+            )}
+
             <div className="-space-y-px rounded-md shadow-sm">
               <div>
                 <label htmlFor="email-address" className="sr-only">
@@ -100,6 +98,7 @@ function Login() {
                   placeholder="Email address"
                   value={form.email}
                   onChange={handleInputChange}
+                  disabled={loading}
                 />
               </div>
               <div>
@@ -116,6 +115,7 @@ function Login() {
                   placeholder="Password"
                   value={form.password}
                   onChange={handleInputChange}
+                  disabled={loading}
                 />
               </div>
             </div>
@@ -132,12 +132,12 @@ function Login() {
                   htmlFor="remember-me"
                   className="ml-2 block text-sm text-gray-900"
                 >
-                  Remember me
+                  Beni hatırla
                 </label>
               </div>
 
               <div className="text-sm">
-                <span className="font-medium text-primary hover:text-indigo-500">
+                <span className="font-medium text-primary hover:text-indigo-500 cursor-pointer">
                   Şifreni mi unuttun?
                 </span>
               </div>
@@ -146,16 +146,18 @@ function Login() {
             <div>
               <button
                 type="submit"
-                className="group relative flex w-full justify-center rounded-md bg-secondary py-2 px-3 text-sm font-semibold text-white hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                onClick={loginUser}
+                className="group relative flex w-full justify-center rounded-md bg-secondary py-2 px-3 text-sm font-semibold text-white hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                disabled={loading}
               >
                 <span className="absolute inset-y-0 left-0 flex items-center pl-3">
-                  {/* <LockClosedIcon
-                    className="h-5 w-5 text-indigo-500 group-hover:text-indigo-400"
-                    aria-hidden="true"
-                  /> */}
+                  {loading && (
+                    <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                  )}
                 </span>
-                Sign in
+                {loading ? "Giriş yapılıyor..." : "Giriş Yap"}
               </button>
               <p className="mt-2 text-end text-medium font-bold text-primary">
                 <Link to="/register"> Kayıt Ol </Link>

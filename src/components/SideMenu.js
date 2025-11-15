@@ -1,14 +1,17 @@
 import React, { useContext } from "react";
 import { Link } from "react-router-dom";
 import AuthContext from "../AuthContext";
+import { getCurrentUser, isAdmin as checkIsAdmin } from "../utils/api";
 
 function SideMenu() {
-  const { isAdmin } = useContext(AuthContext);
+  const authContext = useContext(AuthContext);
   
-  // localStorage'dan direkt string olarak al
-  const userName = localStorage.getItem("userName") || "User";
-  const userEmail = localStorage.getItem("userEmail") || "";
-  const userImage = localStorage.getItem("userImage") || "https://via.placeholder.com/150";
+  // getCurrentUser helper'ını kullan
+  const user = getCurrentUser();
+  const userName = user ? `${user.firstName} ${user.lastName}` : "User";
+  const userEmail = user?.email || "";
+  const userImage = user?.imageUrl || "https://via.placeholder.com/150";
+  const isAdmin = checkIsAdmin();
 
   return (
     <div className="h-full flex-col justify-between bg-white hidden lg:flex">

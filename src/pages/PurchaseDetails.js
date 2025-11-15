@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useContext } from "react";
 import AddPurchaseDetails from "../components/AddPurchaseDetails";
 import AuthContext from "../AuthContext";
+import { getPurchases, getProducts } from "../utils/api";
 
 function PurchaseDetails() {
   const [showPurchaseModal, setPurchaseModal] = useState(false);
@@ -15,33 +16,28 @@ function PurchaseDetails() {
     fetchProductsData();
   }, [updatePage]);
 
-  // Fetching Data of All Purchase items
-  const fetchPurchaseData = () => {
-    fetch(`http://localhost:4000/api/purchase/get/${authContext.user}`)
-      .then((response) => response.json())
-      .then((data) => {
-        setAllPurchaseData(data);
-      })
-      .catch((err) => console.log(err));
+  const fetchPurchaseData = async () => {
+    try {
+      const data = await getPurchases();
+      setAllPurchaseData(data);
+    } catch (err) {
+      console.log(err);
+    }
   };
 
-  // Fetching Data of All Products
-  const fetchProductsData = () => {
-    fetch(`http://localhost:4000/api/product/get/${authContext.user}`)
-      .then((response) => response.json())
-      .then((data) => {
-        setAllProducts(data);
-      })
-      .catch((err) => console.log(err));
+  const fetchProductsData = async () => {
+    try {
+      const data = await getProducts();
+      setAllProducts(data);
+    } catch (err) {
+      console.log(err);
+    }
   };
 
-  // Modal for Sale Add
   const addSaleModalSetting = () => {
     setPurchaseModal(!showPurchaseModal);
   };
 
-  
-  // Handle Page Update
   const handlePageUpdate = () => {
     setUpdatePage(!updatePage);
   };
@@ -54,10 +50,9 @@ function PurchaseDetails() {
             addSaleModalSetting={addSaleModalSetting}
             products={products}
             handlePageUpdate={handlePageUpdate}
-            authContext = {authContext}
+            authContext={authContext}
           />
         )}
-        {/* Table  */}
         <div className="overflow-x-auto rounded-lg border bg-white border-gray-200 ">
           <div className="flex justify-between pt-5 pb-3 px-3">
             <div className="flex gap-4 justify-center items-center ">
@@ -68,7 +63,6 @@ function PurchaseDetails() {
                 className="bg-blue-500 hover:bg-blue-700 text-white font-bold p-2 text-xs  rounded"
                 onClick={addSaleModalSetting}
               >
-                {/* <Link to="/inventory/add-product">Add Product</Link> */}
                 Add Purchase
               </button>
             </div>

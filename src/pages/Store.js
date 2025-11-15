@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useContext } from "react";
 import AddStore from "../components/AddStore";
 import AuthContext from "../AuthContext";
+import { getStores } from "../utils/api";
 
 function Store() {
   const [showModal, setShowModal] = useState(false);
@@ -13,12 +14,13 @@ function Store() {
   }, []);
 
   // Fetching all stores data
-  const fetchData = () => {
-    fetch(`http://localhost:4000/api/store/get/${authContext.user}`)
-      .then((response) => response.json())
-      .then((data) => {
-        setAllStores(data);
-      });
+  const fetchData = async () => {
+    try {
+      const data = await getStores();
+      setAllStores(data);
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   const modalSetting = () => {

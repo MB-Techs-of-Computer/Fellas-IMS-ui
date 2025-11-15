@@ -1,3 +1,4 @@
+import { addPurchase } from "../utils/api";
 import { Fragment, useRef, useState } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { PlusIcon } from "@heroicons/react/24/outline";
@@ -26,20 +27,16 @@ export default function AddPurchaseDetails({
   };
 
   // POST Data
-  const addSale = () => {
-    fetch("http://localhost:4000/api/purchase/add", {
-      method: "POST",
-      headers: {
-        "Content-type": "application/json",
-      },
-      body: JSON.stringify(purchase),
-    })
-      .then((result) => {
-        alert("Purchase ADDED");
-        handlePageUpdate();
-        addSaleModalSetting();
-      })
-      .catch((err) => console.log(err));
+  const addSale = async () => {
+    try {
+      await addPurchase(purchase);
+      alert("Purchase ADDED");
+      handlePageUpdate();
+      addSaleModalSetting();
+    } catch (err) {
+      console.log(err);
+      alert("Hata oluştu");
+    }
   };
 
   return (
