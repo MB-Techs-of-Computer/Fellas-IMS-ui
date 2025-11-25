@@ -16,34 +16,40 @@ function Login() {
 
   const handleInputChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
-    setError(""); // Error mesajını temizle
+    setError("");
   };
 
   const loginUser = async (e) => {
-    e.preventDefault();
+  e.preventDefault();
 
-    // Validation
-    if (form.email === "" || form.password === "") {
-      setError("Lütfen email ve şifrenizi girin");
-      return;
-    }
+  if (form.email === "" || form.password === "") {
+    setError("Lütfen email ve şifrenizi girin");
+    return;
+  }
 
-    setLoading(true);
-    setError("");
+  setLoading(true);
+  setError("");
 
-    try {
-      const data = await login(form.email, form.password);
-      authContext.signin(data.user.id, data.user.role, () => {
-  navigate("/");
-});
-
-    } catch (err) {
-      console.error("Login error:", err);
-      setError(err.message || "Giriş başarısız. Lütfen bilgilerinizi kontrol edin.");
-    } finally {
-      setLoading(false);
-    }
-  };
+  try {
+    const data = await login(form.email, form.password);
+    
+    const userId = data.user.id; 
+    const userRole = data.user.role;
+    
+    localStorage.setItem("userName", `${data.user.firstName} ${data.user.lastName}`);
+    localStorage.setItem("userEmail", data.user.email);
+    localStorage.setItem("userImage", data.user.imageUrl || "https://via.placeholder.com/150");
+    
+    authContext.signin(userId, userRole);
+    navigate("/");
+    
+  } catch (err) {
+    console.error("Login error:", err);
+    setError(err.message || "Giriş başarısız. Lütfen bilgilerinizi kontrol edin.");
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <>

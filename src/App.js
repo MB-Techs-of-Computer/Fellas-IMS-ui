@@ -1,9 +1,8 @@
 import React from "react";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
-import Dashboard from "./pages/Dashboard";
 import "./index.css";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Layout from "./components/Layout";
 import Inventory from "./pages/Inventory";
 import NoPageFound from "./pages/NoPageFound";
@@ -16,92 +15,72 @@ import PurchaseDetails from "./pages/PurchaseDetails";
 
 const App = () => {
   const [user, setUser] = useState("");
-  const [role, setRole] = useState("");
-  const [loader, setLoader] = useState(true);
+  const [userRole, setUserRole] = useState("");
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const myLoginUser = localStorage.getItem("user");
-    const myUserRole = localStorage.getItem("role");
+    const myUserRole = localStorage.getItem("userRole");
 
     if (myLoginUser) {
       setUser(myLoginUser);
-      setRole(myUserRole || "employee");
+      setUserRole(myUserRole);
     }
-    setLoader(false);
+    
+    setLoading(false);
   }, []);
 
-  const signin = (newUser, newRole, callback) => {
-  setUser(newUser);
-  setRole(newRole);
-
-  localStorage.setItem("user", newUser);
-  localStorage.setItem("role", newRole);
-
-  callback();
-};
-
-
-  const signout = () => {
-    setUser("");
-    setRole("");
-    localStorage.removeItem("user");
-    localStorage.removeItem("role");
-    localStorage.removeItem("userName");
+  const signin = (id, role) => {
+    setUser(id);
+    setUserRole(role);
+    localStorage.setItem("user", id);
+    localStorage.setItem("userRole", role);
   };
 
-  const isAdmin = role === "admin";
+  const signout = () => {
+    localStorage.clear();
+    setUser("");
+    setUserRole("");
+  };
 
-  let value = { user, signin, signout, role, isAdmin };
+  const isAdmin = userRole === "admin";
 
-  if (loader) {
+  if (loading) {
     return (
-      <div
-        style={{
-          flex: 1,
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
-        <h1>LOADING...</h1>
+      <div style={{ 
+        display: "flex", 
+        justifyContent: "center", 
+        alignItems: "center", 
+        height: "100vh",
+        fontSize: "24px",
+        fontWeight: "bold"
+      }}>
+        Yükleniyor...
       </div>
     );
   }
 
   return (
-    <AuthContext.Provider value={value}>
+    <AuthContext.Provider value={{ user, userRole, signin, signout }}>
       <BrowserRouter>
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
 
-          {isAdmin && (
-            <Route
-              path="/"
-              element={
-                <ProtectedWrapper>
-                  <Layout />
-                </ProtectedWrapper>
-              }
-            >
-              <Route index element={<Dashboard />} />
-              <Route path="/inventory" element={<Inventory />} />
-              <Route path="/purchase-details" element={<PurchaseDetails />} />
-              <Route path="/sales" element={<Sales />} />
-              <Route path="/manage-store" element={<Store />} />
-            </Route>
-          )}
-
-          {!isAdmin && (
-            <Route
-              path="/"
-              element={
-                <ProtectedWrapper>
-                  <Inventory />
-                </ProtectedWrapper>
-              }
-            />
-          )}
+          <Route
+            path="/"
+            element={
+              <ProtectedWrapper>
+                <Layout />
+              </ProtectedWrapper>
+            }
+          >
+            <Route index element={<Inventory />} />
+            <Route path="inventory" element={<Inventory />} />
+            <Route path="purchase-details" element={isAdmin ? <PurchaseDetails /> : <Navigate to="/" />} />
+            <Route path="sales" element={isAdmin ? <Sales /> : <Navigate to="/" />} />
+            <Route path="manage-store" element={isAdmin ? <Store /> : <Navigate to="/" />} />
+          </Route>
 
           <Route path="*" element={<NoPageFound />} />
         </Routes>

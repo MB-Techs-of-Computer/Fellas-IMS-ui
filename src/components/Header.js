@@ -22,7 +22,6 @@ function classNames(...classes) {
 export default function Header() {
   const authContext = useContext(AuthContext);
   
-  // getCurrentUser helper'ını kullan
   const user = getCurrentUser();
   const userName = user ? `${user.firstName} ${user.lastName}` : "User";
   const userEmail = user?.email || "";
