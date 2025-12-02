@@ -1,22 +1,20 @@
 import React, { useContext } from "react";
 import AuthContext from "../AuthContext";
-import { useNavigate } from "react-router-dom";
 import { logout, getCurrentUser } from "../utils/api";
+import userIcon from "../assets/supplier-icon.png";
 
 function EmployeeHeader() {
   const authContext = useContext(AuthContext);
-  const navigate = useNavigate();
   
   // getCurrentUser helper'ını kullan
   const user = getCurrentUser();
   const userName = user ? `${user.firstName} ${user.lastName}` : "User";
   const userEmail = user?.email || "";
-  const userImage = user?.imageUrl || "https://via.placeholder.com/150";
+  const userImage = userIcon;
 
   const handleLogout = () => {
-    logout(); // Token'ı temizler ve login'e yönlendirir
+    logout();
     authContext.signout();
-    // navigate gereksiz, logout() zaten yönlendiriyor
   };
 
   return (

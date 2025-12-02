@@ -2,6 +2,7 @@ import { useContext, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import AuthContext from "../AuthContext";
 import { login } from "../utils/api";
+import logo from "../assets/fellas-original.svg"
 
 function Login() {
   const [form, setForm] = useState({
@@ -20,36 +21,36 @@ function Login() {
   };
 
   const loginUser = async (e) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  if (form.email === "" || form.password === "") {
-    setError("Lütfen email ve şifrenizi girin");
-    return;
-  }
+    if (form.email === "" || form.password === "") {
+      setError("Lütfen email ve şifrenizi girin");
+      return;
+    }
 
-  setLoading(true);
-  setError("");
+    setLoading(true);
+    setError("");
 
-  try {
-    const data = await login(form.email, form.password);
-    
-    const userId = data.user.id; 
-    const userRole = data.user.role;
-    
-    localStorage.setItem("userName", `${data.user.firstName} ${data.user.lastName}`);
-    localStorage.setItem("userEmail", data.user.email);
-    localStorage.setItem("userImage", data.user.imageUrl || "https://via.placeholder.com/150");
-    
-    authContext.signin(userId, userRole);
-    navigate("/");
-    
-  } catch (err) {
-    console.error("Login error:", err);
-    setError(err.message || "Giriş başarısız. Lütfen bilgilerinizi kontrol edin.");
-  } finally {
-    setLoading(false);
-  }
-};
+    try {
+      const data = await login(form.email, form.password);
+
+      const userId = data.user.id;
+      const userRole = data.user.role;
+
+      localStorage.setItem("userName", `${data.user.firstName} ${data.user.lastName}`);
+      localStorage.setItem("userEmail", data.user.email);
+      localStorage.setItem("userImage", data.user.imageUrl || "https://via.placeholder.com/150");
+
+      authContext.signin(userId, userRole);
+      navigate("/");
+
+    } catch (err) {
+      console.error("Login error:", err);
+      setError(err.message || "Giriş başarısız. Lütfen bilgilerinizi kontrol edin.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <>
@@ -60,15 +61,15 @@ function Login() {
         <div className="w-full max-w-md px-10 rounded-lg">
           <div>
             <img
-              className="mx-auto h-20 w-auto"
-              src={require("../assets/logo.png")}
+              className="mx-auto w-3/5"
+              src={logo}
               alt="Your Company"
             />
-            <h2 className="mt-6 text-center text-3xl font-bold tracking-tight text-gray-900">
+            <h2 className="text-center text-3xl font-bold tracking-tight text-gray-900">
               Hesabına giriş yap
             </h2>
           </div>
-          
+
           <form className="mt-8 space-y-6" onSubmit={loginUser}>
             {/* Error mesajı */}
             {error && (

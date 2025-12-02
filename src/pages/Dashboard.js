@@ -14,7 +14,7 @@ import {
 ChartJS.register(ArcElement, Tooltip, Legend);
 
 export const data = {
-  labels: ["Apple", "Knorr", "Shoop", "Green", "Purple", "Orange"],
+  labels: ["Product-1", "Product-2", "Product-3", "Product-4", "Product-5", "Product-6"],
   datasets: [
     {
       label: "# of Votes",
@@ -152,7 +152,7 @@ function Dashboard() {
                 d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"
               />
             </svg>
-            <span className="text-xs font-medium"> 67.81% </span>
+            <span className="text-xs font-medium"> 00.00% </span>
           </div>
 
           <div>
@@ -161,9 +161,9 @@ function Dashboard() {
             </strong>
             <p>
               <span className="text-2xl font-medium text-gray-900">
-                ${saleAmount}
+                {saleAmount}₺
               </span>
-              <span className="text-xs text-gray-500"> from $240.94 </span>
+              <span className="text-xs text-gray-500"> from 0.00₺ </span>
             </p>
           </div>
         </article>
@@ -184,7 +184,7 @@ function Dashboard() {
                 d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6"
               />
             </svg>
-            <span className="text-xs font-medium"> 67.81% </span>
+            <span className="text-xs font-medium"> 00.00% </span>
           </div>
 
           <div>
@@ -193,9 +193,9 @@ function Dashboard() {
             </strong>
             <p>
               <span className="text-2xl font-medium text-gray-900">
-                ${purchaseAmount}
+                {purchaseAmount}₺
               </span>
-              <span className="text-xs text-gray-500"> from $404.32 </span>
+              <span className="text-xs text-gray-500"> from 0.00₺ </span>
             </p>
           </div>
         </article>
@@ -216,7 +216,7 @@ function Dashboard() {
                 d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6"
               />
             </svg>
-            <span className="text-xs font-medium"> 67.81% </span>
+            <span className="text-xs font-medium"> 00.00% </span>
           </div>
 
           <div>
@@ -247,7 +247,7 @@ function Dashboard() {
                 d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6"
               />
             </svg>
-            <span className="text-xs font-medium"> 67.81% </span>
+            <span className="text-xs font-medium"> 00.00% </span>
           </div>
 
           <div>

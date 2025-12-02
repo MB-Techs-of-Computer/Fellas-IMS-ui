@@ -1,19 +1,15 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect } from "react";
 import AddStore from "../components/AddStore";
-import AuthContext from "../AuthContext";
 import { getStores } from "../utils/api";
 
 function Store() {
   const [showModal, setShowModal] = useState(false);
   const [stores, setAllStores] = useState([]);
 
-  const authContext = useContext(AuthContext);
-
   useEffect(() => {
     fetchData();
   }, []);
 
-  // Fetching all stores data
   const fetchData = async () => {
     try {
       const data = await getStores();

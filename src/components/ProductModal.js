@@ -6,7 +6,7 @@ import { addProduct, updateProduct } from "../utils/api";
 export default function ProductModal({
   isOpen,
   onClose,
-  productData = null, // null ise Add mode, data varsa Edit mode
+  productData = null,
   onSuccess,
 }) {
   const authContext = useContext(AuthContext);
@@ -23,29 +23,27 @@ export default function ProductModal({
 
   const cancelButtonRef = useRef(null);
 
-  // Edit mode ise product data'yı doldur
   useEffect(() => {
-    if (isEditMode && productData) {
-      setProduct({
-        ...product,
-        name: productData.name || "",
-        manufacturer: productData.manufacturer || "",
-        description: productData.description || "",
-        stock: productData.stock || 0,
-        unit: productData.unit || "Adet",
-      });
-    } else {
-      // Add mode - reset form
-      setProduct({
-        userId: authContext.user,
-        name: "",
-        manufacturer: "",
-        description: "",
-        stock: 0,
-        unit: "Adet",
-      });
-    }
-  }, [isEditMode, productData]);
+  if (isEditMode && productData) {
+    setProduct({
+      userId: authContext.user,
+      name: productData.name || "",
+      manufacturer: productData.manufacturer || "",
+      description: productData.description || "",
+      stock: productData.stock || 0,
+      unit: productData.unit || "Adet",
+    });
+  } else {
+    setProduct({
+      userId: authContext.user,
+      name: "",
+      manufacturer: "",
+      description: "",
+      stock: 0,
+      unit: "Adet",
+    });
+  }
+}, [isEditMode, productData, authContext.user]);
 
   const handleInputChange = (key, value) => {
     setProduct({ ...product, [key]: value });
@@ -54,17 +52,15 @@ export default function ProductModal({
   const handleSubmit = async () => {
     try {
       if (isEditMode) {
-        // Update existing product
         await updateProduct(productData._id, product);
         alert("Ürün güncellendi!");
       } else {
-        // Add new product
         await addProduct(product);
         alert("Ürün eklendi!");
       }
       
-      onSuccess(); // Listeyi yenile
-      onClose(); // Modal'ı kapat
+      onSuccess();
+      onClose();
     } catch (err) {
       console.log(err);
       alert("Hata oluştu");

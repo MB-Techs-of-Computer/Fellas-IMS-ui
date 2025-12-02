@@ -4,6 +4,8 @@ import { Bars3Icon, BellIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import AuthContext from "../AuthContext";
 import { Link } from "react-router-dom";
 import { logout, getCurrentUser } from "../utils/api";
+import logo from "../assets/fellas-white.svg"
+import userIcon from "../assets/supplier-icon.png";
 
 const navigation = [
   { name: "Dashboard", href: "/", current: true },
@@ -21,11 +23,11 @@ function classNames(...classes) {
 
 export default function Header() {
   const authContext = useContext(AuthContext);
-  
+
   const user = getCurrentUser();
   const userName = user ? `${user.firstName} ${user.lastName}` : "User";
   const userEmail = user?.email || "";
-  const userImage = user?.imageUrl || "https://via.placeholder.com/150";
+  const userImage = userIcon;
 
   const handleLogout = () => {
     logout();
@@ -44,9 +46,9 @@ export default function Header() {
                     <div className="flex-shrink-0">
                       <div className="flex justify-center items-center gap-2">
                         <img
-                          className="h-8 w-8"
-                          src={require("../assets/logo.png")}
-                          alt="Inventory Management System"
+                          className="mx-auto h-16 w-auto"
+                          src={logo}
+                          alt="Your Company"
                         />
                         <span className="font-bold text-white">
                           FELLAS STS

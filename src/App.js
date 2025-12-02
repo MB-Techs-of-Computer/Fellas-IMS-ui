@@ -5,6 +5,7 @@ import "./index.css";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Layout from "./components/Layout";
 import Inventory from "./pages/Inventory";
+import Dashboard from "./pages/Dashboard";
 import NoPageFound from "./pages/NoPageFound";
 import AuthContext from "./AuthContext";
 import ProtectedWrapper from "./ProtectedWrapper";
@@ -77,6 +78,7 @@ const App = () => {
           >
             <Route index element={<Inventory />} />
             <Route path="inventory" element={<Inventory />} />
+            <Route path="dashboard" element={isAdmin ? <Dashboard /> : <Navigate to="/" />} />
             <Route path="purchase-details" element={isAdmin ? <PurchaseDetails /> : <Navigate to="/" />} />
             <Route path="sales" element={isAdmin ? <Sales /> : <Navigate to="/" />} />
             <Route path="manage-store" element={isAdmin ? <Store /> : <Navigate to="/" />} />

@@ -35,9 +35,6 @@ export const authFetch = async (url, options = {}) => {
   return response;
 };
 
-
-
-
 export const login = async (email, password) => {
   const response = await fetch(`${API_BASE_URL}/api/login`, {
     method: "POST",

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import UploadImage from "../components/UploadImage";
 import { register } from "../utils/api";
+import logo from "../assets/fellas-original.svg";
 
 function Register() {
   const [form, setForm] = useState({
@@ -14,21 +14,18 @@ function Register() {
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [uploadingImage, setUploadingImage] = useState(false);
+  // const [uploadingImage, setUploadingImage] = useState(false);
 
   const navigate = useNavigate();
 
-  // Handling Input change for registration form.
   const handleInputChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
-    setError(""); // Error mesajını temizle
+    setError("");
   };
 
-  // Register User
   const registerUser = async (e) => {
     e.preventDefault();
 
-    // Validation
     if (!form.firstName || !form.lastName || !form.email || !form.password || !form.phoneNumber) {
       setError("Lütfen tüm alanları doldurun");
       return;
@@ -38,7 +35,6 @@ function Register() {
     setError("");
 
     try {
-      // api.js'deki register fonksiyonunu kullan
       await register(form);
 
       alert("Kayıt başarılı! Şimdi giriş yapabilirsiniz.");
@@ -52,8 +48,7 @@ function Register() {
     }
   };
 
-  // Uploading image to cloudinary
-  const uploadImage = async (image) => {
+  /* const uploadImage = async (image) => {
     setUploadingImage(true);
     const data = new FormData();
     data.append("file", image);
@@ -76,7 +71,7 @@ function Register() {
     } finally {
       setUploadingImage(false);
     }
-  };
+  }; */
 
   return (
     <>
@@ -84,10 +79,10 @@ function Register() {
         <div className="w-full max-w-md space-y-8 p-10 rounded-lg">
           <div>
             <img
-              className="mx-auto h-12 w-auto"
-              src={require("../assets/logo.png")}
-              alt="Your Company"
-            />
+  className="mx-auto h-20 w-auto"
+  src={logo}
+  alt="Your Company"
+/>
             <h2 className="mt-6 text-center text-3xl font-bold tracking-tight text-gray-900">
               Hesap Oluştur
             </h2>
@@ -177,7 +172,7 @@ function Register() {
               <button
                 type="submit"
                 className="group relative flex w-full justify-center rounded-md bg-indigo-600 py-2 px-3 text-sm font-semibold text-white hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:opacity-50 disabled:cursor-not-allowed"
-                disabled={loading || uploadingImage}
+                disabled={loading} // uploadingImage
               >
                 <span className="absolute inset-y-0 left-0 flex items-center pl-3">
                   {loading && (
